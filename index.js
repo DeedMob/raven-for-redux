@@ -16,7 +16,14 @@ function createRavenMiddleware(Raven, options = {}) {
 
     Raven.setDataCallback((data, original) => {
       data.extra.lastAction = actionTransformer(lastAction);
-      data.extra.state = stateTransformer(store.getState());
+      const state = stateTransformer(store.getState());
+      // split because of Sentry's 512 bytes per extra item.
+      // see https://docs.sentry.io/learn/quotas/#attributes-limits
+      // Contraint: Max 100 top level keys in state, state must be an object.
+      for(var stateAttr in state){
+        if(state.hasOwnProperty(stateAttr)
+           data.extra[stateAttr] = state[stateAttr];
+      }
       return original ? original(data) : data;
     });
 
