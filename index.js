@@ -21,8 +21,8 @@ function createRavenMiddleware(Raven, options = {}) {
       // see https://docs.sentry.io/learn/quotas/#attributes-limits
       // Contraint: Max 100 top level keys in state, state must be an object.
       for(var stateAttr in state){
-        if(state.hasOwnProperty(stateAttr)
-           data.extra[stateAttr] = state[stateAttr];
+        if(state.hasOwnProperty(stateAttr))
+          data.extra['state.'+stateAttr] = state[stateAttr];
       }
       return original ? original(data) : data;
     });
